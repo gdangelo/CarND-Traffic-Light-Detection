@@ -1,0 +1,19 @@
+name: traffic-light
+channels:
+  - https://conda.anaconda.org/menpo
+  - conda-forge
+dependencies:
+  - python==3.5
+  - matplotlib
+  - jupyter
+  - lxml
+  - pillow
+  - contextlib2
+  - Cython
+  - pip:
+    # Mac CPU only py35:
+    - https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.10.1-py3-none-any.whl
+    # Linux GPU support py35:
+    # - https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.10.1-cp35-cp35m-linux_x86_64.whl
+    # Linux CPU only py35:
+    # - https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.10.1-cp35-cp35m-linux_x86_64.whl
