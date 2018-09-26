@@ -10,6 +10,7 @@ dependencies:
   - pillow
   - contextlib2
   - Cython
+  - tqdm
   - pip:
     # Mac CPU only py35:
     - https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.10.1-py3-none-any.whl
