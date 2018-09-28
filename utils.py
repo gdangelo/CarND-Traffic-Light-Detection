@@ -122,32 +122,25 @@ def create_tf_example(data):
     }))
     return tf_example
 
-def convert_dataset_into_tfrecord():
+def create_tf_record(images_dir, labels_dir, output_path):
     """
-    Create TF record for images dataset. Labels are stored in XML files based on
-    PascalVOC annotation.
-
-    Dataset must have the following folders structure:
-    - dataset/
-        - images/
-            - green/*.jpg
-            - yellow/*.jpg
-            - red/*.jpg
-            - nolight/*.jpg
-        - labels/*.xml
+    Create TF record using images in images_dir/ and corresponding XML labels
+    files under labels_dir/.
+    :param images_dir: Images directory (JPG files)
+    :param labels_dir: Labels directory (PascalVOC's XML files)
+    :param output_path: TF record output path
     """
-    writer = tf.python_io.TFRecordWriter('./traffic_light_udacity_sim.record')
 
-    dataset_dir = 'dataset/'
-    images_dir = os.path.join(dataset_dir, 'images/')
-    labels_dir = os.path.join(dataset_dir, 'labels/')
+    writer = tf.python_io.TFRecordWriter(output_path)
 
     for entry in os.listdir(images_dir):
         # Check if entry in images_dir/ is a subdirectory
         data_dir = os.path.join(images_dir, entry)
         if os.path.isdir(data_dir):
+
             # Process each image file
             for filename in os.listdir(data_dir):
+
                 # Check if corresponding labels file exist
                 labels_filename = filename.replace('jpg', 'xml')
                 if os.path.exists(os.path.join(labels_dir, labels_filename)):
@@ -161,11 +154,45 @@ def convert_dataset_into_tfrecord():
                             'path': os.path.join(labels_dir, labels_filename)
                         }
                     }
+
                     # Create TF example based for each image
                     tf_example = create_tf_example(data)
                     writer.write(tf_example.SerializeToString())
 
     writer.close()
 
+def convert_dataset_into_tfrecord():
+    """
+    Convert training and eval dataset into TF records.
+    Labels are stored in XML files based on PascalVOC annotation.
+
+    Dataset must have the following folders structure:
+    - data/
+        - train/
+            - images/
+                + green/*.jpg
+                + yellow/*.jpg
+                + red/*.jpg
+                + nolight/*.jpg
+            - labels/*.xml
+        - eval/
+            + ...
+    """
+    dataset_dir = 'data/'
+
+    train_images_dir = os.path.join(dataset_dir, 'train/', 'images/')
+    train_labels_dir = os.path.join(dataset_dir, 'train/', 'labels/')
+    train_output_tf_record = os.path.join(dataset_dir, './train_traffic_light_udacity_sim.record')
+
+    eval_images_dir = os.path.join(dataset_dir, 'eval/', 'images/')
+    eval_labels_dir = os.path.join(dataset_dir, 'eval/', 'labels/')
+    eval_output_tf_record = os.path.join(dataset_dir, './eval_traffic_light_udacity_sim.record')
+
+    print('Creating TF record for training dataset...')
+    create_tf_record(train_images_dir, train_labels_dir, train_output_tf_record)
+    print('Creating TF record for evaluation dataset...')
+    create_tf_record(eval_images_dir, eval_labels_dir, eval_output_tf_record)
+
 if __name__ == '__main__':
+    #download_and_extract_model('ssd_inception_v2_coco_2018_01_28')
     convert_dataset_into_tfrecord()
